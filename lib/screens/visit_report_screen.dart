@@ -10,6 +10,7 @@ class VisitReportScreen extends StatefulWidget {
    _usrid = usrid;
    _empMobile = empMobile;
    _empemail = empemail;
+
  }
   @override
   State<VisitReportScreen> createState() => _VisitReportScreenState();
@@ -37,7 +38,7 @@ class _VisitReportScreenState extends State<VisitReportScreen> {
         builder: (ctx,snapshot){
           print("data: ${snapshot.data}");
           if(snapshot.connectionState == ConnectionState.waiting){
-            return Center(child: CircularProgressIndicator(),);
+            return Center(child: CircularProgressIndicator(color: Colors.blue.shade800,),);
 
           }
           else if(snapshot.hasError){

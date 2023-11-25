@@ -281,7 +281,7 @@ class _LoginViewState extends State<LoginView> {
           else{
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Colors.black,
-                content: Text("Please enter correct credientials",style: TextStyle(
+                content: Text("Please enter correct credentials",style: TextStyle(
                   color: Colors.white
                 ),)));
             setState(() {

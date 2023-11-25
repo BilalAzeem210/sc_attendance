@@ -10,6 +10,7 @@ class ProfileScreen extends StatefulWidget {
     _userId = userId;
     _empemail = empemail;
     _empMobile = empMobile;
+
   }
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -43,7 +44,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: FutureBuilder<Map<String,dynamic>?>(
                   future: _dataFuture,
                     builder: (ctx , snapshot){
-                    if (snapshot.hasData && snapshot.data != null) {
+                      print("data: ${snapshot.data}");
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return Center(child: CircularProgressIndicator(color: Colors.blue.shade800,),);
+
+                      }
+                      else if(snapshot.hasError){
+                        return Center(child: Text('Data Not Found'),);
+
+                      }
+                    else {
                       Map<String, dynamic> data = snapshot.data!;
                       return SingleChildScrollView(
                           child: Column(
@@ -108,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   Future<Map<String, dynamic>?> _fetchData() async{
     try{
-      var response = await http.get(Uri.http("194.163.166.163:1251","/ords/sc_attendence/attn/employee_info",{"usrid" : widget._userId, "monid" : "202107"}));
+      var response = await http.get(Uri.http("194.163.166.163:1251","/ords/sc_attendence/attn/employee_info",{"usrid" : widget._userId}));
       int statusCode = response.statusCode;
       print(statusCode);
       if(statusCode == 200){

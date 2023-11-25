@@ -1,14 +1,20 @@
+import 'dart:convert';
+
 import 'package:essa_attendence/screens/login.dart';
+import 'package:essa_attendence/screens/map_review_screen.dart';
+import 'package:essa_attendence/screens/no_attendance_screen.dart';
 import 'package:essa_attendence/screens/profile_screen.dart';
 import 'package:essa_attendence/screens/visit_report_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
 
 class MyDrawer extends StatelessWidget {
   late String _userId;
   late String _empemail;
   late String _empMobile;
+
   double _latitude = 0.0;
   double _longitude = 0.0;
 
@@ -16,6 +22,7 @@ class MyDrawer extends StatelessWidget {
     this._userId = userId;
     this._empemail = empemail;
     this._empMobile = empMobile;
+
   }
 
   @override
@@ -81,6 +88,41 @@ class MyDrawer extends StatelessWidget {
                                 await _getLocation();
                                 print("latitude : ${_latitude}");
                                 print("longitude : ${_longitude}");
+                                try {
+                                  DateTime date = DateTime.now();
+                                  Map<int, String> months = {1 : "JAN", 2 : "FEB", 3 : "MAR", 4 : "APR", 5 : "MAY",
+                                    6 : "JUN", 7 : "JUL", 8 : "AUG", 9 : "SEP", 10 : "OCT", 11 : "NOV",12 : "DEC"};
+                                  String isAMOrPM = date.hour < 12 ? "AM" : "PM";
+                                  var myDate = "${date.day}-${months[date.month]}-${date.year} ${date.hour}:${date.minute}:${date.second} $isAMOrPM";
+                                  print(myDate);
+                                  var response = await http.post(Uri.http("194.163.166.163:1251","/ords/sc_attendence/attn/attendence"),
+                                      headers: <String, String>{
+                                        'Content-Type' : 'application/json'
+                                      },
+                                      body: jsonEncode(<String, dynamic>{
+                                        "usrid" : _userId,
+                                        "checktype" : "I",
+                                        "gpslat" : _latitude,
+                                        "gpslon" : _longitude,
+                                        "remarks": remarksController.text
+                                      })
+                                  );
+                                  print("post ${response.statusCode}");
+                                  if(response.statusCode == 200){
+                                    print('Successfully: ${response.body.toString()}');
+                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Attendence successfully marked")));
+                                  }
+                                  else{
+                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Something went wrong in marking attendence")));
+                                  }
+                                  Navigator.of(ctx).pop();
+                                }
+
+                                catch(e){
+                                  print(e.toString());
+                                }
+
+
                               },
                               child: const Text('Mark Attendence',
                                 style: TextStyle(color:Colors.white),),
@@ -131,6 +173,39 @@ class MyDrawer extends StatelessWidget {
                                 await _getLocation();
                                 print("latitude : ${_latitude}");
                                 print("longitude : ${_longitude}");
+                                try {
+                                  DateTime date = DateTime.now();
+                                  Map<int, String> months = {1 : "JAN", 2 : "FEB", 3 : "MAR", 4 : "APR", 5 : "MAY",
+                                    6 : "JUN", 7 : "JUL", 8 : "AUG", 9 : "SEP", 10 : "OCT", 11 : "NOV",12 : "DEC"};
+                                  String isAMOrPM = date.hour < 12 ? "AM" : "PM";
+                                  var myDate = "${date.day}-${months[date.month]}-${date.year} ${date.hour}:${date.minute}:${date.second} $isAMOrPM";
+                                  print(myDate);
+                                  var response = await http.post(Uri.http("194.163.166.163:1251","/ords/sc_attendence/attn/attendence"),
+                                      headers: <String, String>{
+                                        'Content-Type' : 'application/json'
+                                      },
+                                      body: jsonEncode(<String, dynamic>{
+                                        "usrid" : _userId,
+                                        "checktype" : "I",
+                                        "gpslat" : _latitude,
+                                        "gpslon" : _longitude,
+                                        "remarks": remarksController.text
+                                      })
+                                  );
+                                  print("post ${response.statusCode}");
+                                  if(response.statusCode == 200){
+                                    print('Successfully: ${response.body.toString()}');
+                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Visit successfully marked")));
+                                  }
+                                  else{
+                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Something went wrong in marking visit")));
+                                  }
+                                  Navigator.of(ctx).pop();
+                                }
+
+                                catch(e){
+                                  print(e.toString());
+                                }
                               },
                               child: const Text('Mark Visits',style: TextStyle(color: Colors.white),),
                             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -159,13 +234,18 @@ class MyDrawer extends StatelessWidget {
             leading: Icon(Icons.report,size: 20,), //add icon
             childrenPadding: EdgeInsets.only(left:60), //children padding
             children: [
-            ListTile(
-            leading: Icon(Icons.location_city_sharp,size: 20,),
-              title: Text("Attendence Last n Days",style: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 16
-              ),),
-    
+            InkWell(
+              onTap:(){
+                Navigator.pushReplacement(context, PageTransition(child: NoAttendanceScreen(_userId,_empMobile,_empemail), type: PageTransitionType.rightToLeft));
+              },
+              child: ListTile(
+              leading: Icon(Icons.location_city_sharp,size: 20,),
+                title: Text("Attendence Last n Days",style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16
+                ),),
+
+              ),
             ),
               InkWell(
                 onTap: (){
@@ -184,14 +264,19 @@ class MyDrawer extends StatelessWidget {
             ]
     ),
 
-           const ListTile(
-              leading: Icon(Icons.map_sharp,size: 20,),
-              title: Text("Presence in Map",style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal
-              ),),
+           InkWell(
+             onTap: (){
+               Navigator.push(context, PageTransition(child: MapReviewScreen(), type: PageTransitionType.rightToLeft));
+             },
+             child: const ListTile(
+                leading: Icon(Icons.map_sharp,size: 20,),
+                title: Text("Presence in Map",style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal
+                ),),
 
-            ),
+              ),
+           ),
             const ListTile(
               leading: Icon(Icons.timeline,size: 20,),
               title: Text("Timeline",style: TextStyle(
