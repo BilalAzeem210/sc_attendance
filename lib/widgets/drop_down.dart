@@ -56,8 +56,8 @@ class _MyDropDownState extends State<MyDropDown> {
           widget._fetchDataCallback(_dropdownValue);
 
         },
-            style:ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade800),
-            child: Text("Check attendence",style: TextStyle(color: Colors.white),))
+            style:ElevatedButton.styleFrom(backgroundColor: Color(0xff01468f)),
+            child: Text("Check attendance",style: TextStyle(color: Colors.white),))
       ],
     );
   }

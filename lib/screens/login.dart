@@ -18,9 +18,10 @@ class _LoginViewState extends State<LoginView> {
   final _formState = GlobalKey<FormState>();
   final _hidePassword = ValueNotifier<bool>(true);
   bool _isLoading = false;
-  String _email = "";
-  String _password = "";
+  String? _email;
+  String? _password;
   var sharedPreference;
+  TextEditingController _passwordController = TextEditingController();
   ValueNotifier<bool> _loginListen = ValueNotifier<bool>(true);
   var _deviceToken,_dbExistence,_isFirsttime;
   Future<bool> _checkDbExistence() async{
@@ -28,11 +29,15 @@ class _LoginViewState extends State<LoginView> {
 
     sharedPreference = (await SharedPreferences.getInstance());
     var token = sharedPreference.getString("deviceToken");
+    _email = sharedPreference.getString("_email");
+    _password = sharedPreference.getString("_password");
+    if(_password != null){
+      _passwordController.text = _password!;
+      _passwordController.selection = TextSelection.fromPosition(TextPosition(offset: _password!.length));
+    }
     if(token != null){
       print("sh token : ${token}");
       // bind data
-      _email = sharedPreference.getString("mobileNo");
-      _email = _email;
       _deviceToken = token;
       return false;
     }
@@ -96,32 +101,28 @@ class _LoginViewState extends State<LoginView> {
                         child: Column(
                           children: <Widget>[
                             const SizedBox(height: 10,),
-                            /*const Text('Login',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-
-                              ),
-                              textAlign: TextAlign.start,)*/
                             const SizedBox(height: 10,),
                             Flexible(flex: 1,child: Padding(padding: const EdgeInsets.symmetric(horizontal: 15,),
                               child: TextFormField(
                                 validator: (val){
-                                  if(val!.isEmpty){
+                                  if(_email!.isEmpty){
                                     return "Please provide valid username";
                                   }
                                   return null;
                                 },
                                 onSaved: (val){
-                                  _email = val!;
-                                  LoginView.email = _email;
+                                  if(_isFirsttime) {
+                                    print("first save");
+                                    _email = val!;
+                                  }
+                                  LoginView.email = _email!;
                                 },
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                   prefixIcon: const Icon(
                                     Icons.email_rounded
                                   ),
-                                    hintText: "Email",
+                                    hintText: _email == null ? "Email" : _email,
                                     fillColor: const Color(0xfff6f7fa),
                                     filled: true,
                                     focusedBorder: OutlineInputBorder(
@@ -145,6 +146,7 @@ class _LoginViewState extends State<LoginView> {
                                 valueListenable: _hidePassword,
                                 builder: (ctx, value, child){
                                   return TextFormField(
+                                    controller: _passwordController,
                                     onSaved: (val){
                                       _password = val!;
                                     },
@@ -157,7 +159,7 @@ class _LoginViewState extends State<LoginView> {
                                     obscureText: _hidePassword.value,
                                     obscuringCharacter: "*",
                                     decoration: InputDecoration(
-                                      hintText: "Password",
+                                      hintText: _password == null ? "Password" : _password,
                                       suffixIcon: IconButton(icon: _hidePassword.value ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility), onPressed: (){
                                         _hidePassword.value = !_hidePassword.value;
                                       },),
@@ -194,7 +196,9 @@ class _LoginViewState extends State<LoginView> {
                                 ),
                                 child: _isLoading ? const Center(child: CircularProgressIndicator(color: Colors.white,)) : const Center(child: Text("Login", style: TextStyle(
                                     color: Colors.white
-                                ),),),
+                                ),
+                                ),
+                                ),
                               ),
                             ),
                             ),
@@ -254,7 +258,8 @@ class _LoginViewState extends State<LoginView> {
             print("first put status : ${deviceTokenResponse.statusCode}");
             if(deviceTokenResponse.statusCode == 200){
               await sharedPreference.setString("deviceToken", deviceToken);
-              await sharedPreference.setString("mobileNo", _email);
+              await sharedPreference.setString("_email", _email);
+              await sharedPreference.setString("_password", _password);
               print("data successfully inserted");
               Navigator.pushReplacement(context, PageTransition(child: ProfileScreen(res["items"][0]["usrid"], res["items"][0]["empemail"],res["items"][0]["empmobile"]), type: PageTransitionType.rightToLeft));
             }
@@ -309,4 +314,10 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
+@override
+  void dispose() {
+    // TODO: implement dispose
+  _passwordController.dispose();
+  super.dispose();
+  }
 }

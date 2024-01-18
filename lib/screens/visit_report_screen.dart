@@ -29,7 +29,7 @@ class _VisitReportScreenState extends State<VisitReportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Visits Report',style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.blue.shade800,
+        backgroundColor: Color(0xff01468f),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: MyDrawer(widget._usrid,widget._empMobile,widget._empemail),

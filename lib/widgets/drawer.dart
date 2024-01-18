@@ -38,7 +38,7 @@ class MyDrawer extends StatelessWidget {
             decoration: const BoxDecoration(
               //image: DecorationImage(image: AssetImage('assets/images/drawer.png'),
               //fit: BoxFit.cover),
-              color: Colors.blue
+              color: Color(0xff01468f)
             ),
             ),
             InkWell(
@@ -84,45 +84,72 @@ class MyDrawer extends StatelessWidget {
                           ),
                           const SizedBox(height: 10,),
                           ElevatedButton(
-                              onPressed: ()async{
-                                await _getLocation();
-                                print("latitude : ${_latitude}");
-                                print("longitude : ${_longitude}");
-                                try {
-                                  DateTime date = DateTime.now();
-                                  Map<int, String> months = {1 : "JAN", 2 : "FEB", 3 : "MAR", 4 : "APR", 5 : "MAY",
-                                    6 : "JUN", 7 : "JUL", 8 : "AUG", 9 : "SEP", 10 : "OCT", 11 : "NOV",12 : "DEC"};
-                                  String isAMOrPM = date.hour < 12 ? "AM" : "PM";
-                                  var myDate = "${date.day}-${months[date.month]}-${date.year} ${date.hour}:${date.minute}:${date.second} $isAMOrPM";
-                                  print(myDate);
-                                  var response = await http.post(Uri.http("194.163.166.163:1251","/ords/sc_attendence/attn/attendence"),
-                                      headers: <String, String>{
-                                        'Content-Type' : 'application/json'
-                                      },
-                                      body: jsonEncode(<String, dynamic>{
-                                        "usrid" : _userId,
-                                        "checktype" : "I",
-                                        "gpslat" : _latitude,
-                                        "gpslon" : _longitude,
-                                        "remarks": remarksController.text
-                                      })
-                                  );
-                                  print("post ${response.statusCode}");
-                                  if(response.statusCode == 200){
-                                    print('Successfully: ${response.body.toString()}');
-                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Attendence successfully marked")));
+                              onPressed: ()async {
+                                if (await _getLocation()) {
+                                  print("latitude : ${_latitude}");
+                                  print("longitude : ${_longitude}");
+                                  try {
+                                    DateTime date = DateTime.now();
+                                    Map<int, String> months = {
+                                      1: "JAN",
+                                      2: "FEB",
+                                      3: "MAR",
+                                      4: "APR",
+                                      5: "MAY",
+                                      6: "JUN",
+                                      7: "JUL",
+                                      8: "AUG",
+                                      9: "SEP",
+                                      10: "OCT",
+                                      11: "NOV",
+                                      12: "DEC"
+                                    };
+                                    String isAMOrPM = date.hour < 12
+                                        ? "AM"
+                                        : "PM";
+                                    var myDate = "${date.day}-${months[date
+                                        .month]}-${date.year} ${date
+                                        .hour}:${date.minute}:${date
+                                        .second} $isAMOrPM";
+                                    print(myDate);
+                                    var response = await http.post(Uri.http(
+                                        "194.163.166.163:1251",
+                                        "/ords/sc_attendence/attn/attendence"),
+                                        headers: <String, String>{
+                                          'Content-Type': 'application/json'
+                                        },
+                                        body: jsonEncode(<String, dynamic>{
+                                          "usrid": _userId,
+                                          "checktype": "I",
+                                          "gpslat": _latitude,
+                                          "gpslon": _longitude,
+                                          "remarks": remarksController.text
+                                        })
+                                    );
+                                    print("post ${response.statusCode}");
+                                    if (response.statusCode == 200) {
+                                      print('Successfully: ${response.body
+                                          .toString()}');
+                                      ScaffoldMessenger.of(ctx).showSnackBar(
+                                          SnackBar(content: Text(
+                                              "Attendence successfully marked")));
+                                    }
+                                    else {
+                                      ScaffoldMessenger.of(ctx).showSnackBar(
+                                          SnackBar(content: Text(
+                                              "Something went wrong in marking attendence")));
+                                    }
+                                    Navigator.of(ctx).pop();
                                   }
-                                  else{
-                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Something went wrong in marking attendence")));
+
+                                  catch (e) {
+                                    print(e.toString());
                                   }
+                                }
+                                else{
                                   Navigator.of(ctx).pop();
+                                  ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Please open your location")));
                                 }
-
-                                catch(e){
-                                  print(e.toString());
-                                }
-
-
                               },
                               child: const Text('Mark Attendence',
                                 style: TextStyle(color:Colors.white),),
@@ -169,42 +196,71 @@ class MyDrawer extends StatelessWidget {
                           ),
                           const SizedBox(height: 10,),
                           ElevatedButton(
-                              onPressed: ()async{
-                                await _getLocation();
-                                print("latitude : ${_latitude}");
-                                print("longitude : ${_longitude}");
-                                try {
-                                  DateTime date = DateTime.now();
-                                  Map<int, String> months = {1 : "JAN", 2 : "FEB", 3 : "MAR", 4 : "APR", 5 : "MAY",
-                                    6 : "JUN", 7 : "JUL", 8 : "AUG", 9 : "SEP", 10 : "OCT", 11 : "NOV",12 : "DEC"};
-                                  String isAMOrPM = date.hour < 12 ? "AM" : "PM";
-                                  var myDate = "${date.day}-${months[date.month]}-${date.year} ${date.hour}:${date.minute}:${date.second} $isAMOrPM";
-                                  print(myDate);
-                                  var response = await http.post(Uri.http("194.163.166.163:1251","/ords/sc_attendence/attn/attendence"),
-                                      headers: <String, String>{
-                                        'Content-Type' : 'application/json'
-                                      },
-                                      body: jsonEncode(<String, dynamic>{
-                                        "usrid" : _userId,
-                                        "checktype" : "I",
-                                        "gpslat" : _latitude,
-                                        "gpslon" : _longitude,
-                                        "remarks": remarksController.text
-                                      })
-                                  );
-                                  print("post ${response.statusCode}");
-                                  if(response.statusCode == 200){
-                                    print('Successfully: ${response.body.toString()}');
-                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Visit successfully marked")));
+                              onPressed: ()async {
+                                if (await _getLocation()) {
+                                  print("latitude : ${_latitude}");
+                                  print("longitude : ${_longitude}");
+                                  try {
+                                    DateTime date = DateTime.now();
+                                    Map<int, String> months = {
+                                      1: "JAN",
+                                      2: "FEB",
+                                      3: "MAR",
+                                      4: "APR",
+                                      5: "MAY",
+                                      6: "JUN",
+                                      7: "JUL",
+                                      8: "AUG",
+                                      9: "SEP",
+                                      10: "OCT",
+                                      11: "NOV",
+                                      12: "DEC"
+                                    };
+                                    String isAMOrPM = date.hour < 12
+                                        ? "AM"
+                                        : "PM";
+                                    var myDate = "${date.day}-${months[date
+                                        .month]}-${date.year} ${date
+                                        .hour}:${date.minute}:${date
+                                        .second} $isAMOrPM";
+                                    print(myDate);
+                                    var response = await http.post(Uri.http(
+                                        "194.163.166.163:1251",
+                                        "/ords/sc_attendence/attn/attendence"),
+                                        headers: <String, String>{
+                                          'Content-Type': 'application/json'
+                                        },
+                                        body: jsonEncode(<String, dynamic>{
+                                          "usrid": _userId,
+                                          "checktype": "I",
+                                          "gpslat": _latitude,
+                                          "gpslon": _longitude,
+                                          "remarks": remarksController.text
+                                        })
+                                    );
+                                    print("post ${response.statusCode}");
+                                    if (response.statusCode == 200) {
+                                      print('Successfully: ${response.body
+                                          .toString()}');
+                                      ScaffoldMessenger.of(ctx).showSnackBar(
+                                          SnackBar(content: Text(
+                                              "Visit successfully marked")));
+                                    }
+                                    else {
+                                      ScaffoldMessenger.of(ctx).showSnackBar(
+                                          SnackBar(content: Text(
+                                              "Something went wrong in marking visit")));
+                                    }
+                                    Navigator.of(ctx).pop();
                                   }
-                                  else{
-                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Something went wrong in marking visit")));
-                                  }
-                                  Navigator.of(ctx).pop();
-                                }
 
-                                catch(e){
-                                  print(e.toString());
+                                  catch (e) {
+                                    print(e.toString());
+                                  }
+                                }
+                                else{
+                                  Navigator.of(ctx).pop();
+                                  ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Please open your location")));
                                 }
                               },
                               child: const Text('Mark Visits',style: TextStyle(color: Colors.white),),
@@ -304,7 +360,7 @@ class MyDrawer extends StatelessWidget {
     );
   }
 
-  Future<void> _getLocation() async{
+  Future<bool> _getLocation() async{
     Location location = Location();
 
     bool serviceEnabled;
@@ -315,7 +371,7 @@ class MyDrawer extends StatelessWidget {
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
-        return;
+        return false;
       }
     }
 
@@ -323,13 +379,14 @@ class MyDrawer extends StatelessWidget {
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
-        return;
+        return false;
       }
     }
-
+    location.changeSettings(accuracy: LocationAccuracy.high);
     locationData = await location.getLocation();
     _latitude = locationData.latitude!;
     _longitude = locationData.longitude!;
+    return true;
   }
 
 }

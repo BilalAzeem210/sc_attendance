@@ -29,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile Screen',style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.blue.shade800,
+        backgroundColor: Color(0xff01468f),
         iconTheme: IconThemeData(color: Colors.white),
 
 
@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Card(
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.8,
-                width: MediaQuery.of(context).size.width,
+                width:  MediaQuery.of(context).size.width,
                 child: FutureBuilder<Map<String,dynamic>?>(
                   future: _dataFuture,
                     builder: (ctx , snapshot){

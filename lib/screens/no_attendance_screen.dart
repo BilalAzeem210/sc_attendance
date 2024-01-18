@@ -32,7 +32,7 @@ class _NoAttendanceScreenState extends State<NoAttendanceScreen> {
     return Scaffold(
       floatingActionButton: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue.shade800
+          backgroundColor: Color(0xff01468f)
         ),
         onPressed: () {
           showModalBottomSheet(context: context, builder: (ctx) {
@@ -52,7 +52,7 @@ class _NoAttendanceScreenState extends State<NoAttendanceScreen> {
       ),
       appBar: AppBar(
         title: Text("Attendance Report",style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.blue.shade800,
+        backgroundColor: Color(0xff01468f),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: MyDrawer(widget._userId,widget._empemail,widget._empmobile),
